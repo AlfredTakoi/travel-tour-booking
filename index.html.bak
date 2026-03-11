@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StayEase | Luxury Travel Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary: #2563eb;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* Page Transition Animations */
+        .page-enter {
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content {
+            display: none;
+            opacity: 0;
+        }
+
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Scroll Reveal Effect */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Glassmorphism */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Custom Hover Effects */
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+        }
+
+        .btn-pulse:hover {
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+        }
+
+        /* Shimmer loading effect for images */
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 glass-nav border-b border-slate-200/50 transition-all duration-300" id="main-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-2 cursor-pointer group" onclick="showPage('home')">
+                    <div
+                        class="bg-blue-600 p-2 rounded-xl text-white transform group-hover:rotate-12 transition-transform duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                    </div>
+                    <span class="text-2xl font-extrabold tracking-tight text-slate-800">Stay<span
+                            class="text-blue-600">Ease</span></span>
+                </div>
+
+                <div class="hidden md:flex space-x-10 font-semibold text-slate-600">
+                    <button onclick="showPage('home')" class="hover:text-blue-600 transition-colors relative group">
+                        Beranda
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                    </button>
+                    <button onclick="showPage('rooms')" class="hover:text-blue-600 transition-colors relative group">
+                        Kamar
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                    </button>
+                    <button onclick="showPage('gallery')" class="hover:text-blue-600 transition-colors relative group">
+                        Galeri
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                    </button>
+                    <button onclick="showPage('contact')" class="hover:text-blue-600 transition-colors relative group">
+                        Kontak
+                        <span
+                            class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all group-hover:w-full"></span>
+                    </button>
+                </div>
+
+                <button onclick="showPage('rooms')"
+                    class="bg-blue-600 text-white px-7 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 btn-pulse hidden md:block">
+                    Reservasi
+                </button>
+
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="p-2 text-slate-600">
+                        <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" x2="20" y1="12" y2="12" />
+                            <line x1="4" x2="20" y1="6" y2="6" />
+                            <line x1="4" x2="20" y1="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white/95 backdrop-blur-md border-b border-slate-200 px-6 py-8 space-y-6 animate__animated animate__fadeInDown animate__faster">
+            <button onclick="showPage('home')" class="block w-full text-left text-lg font-bold">Beranda</button>
+            <button onclick="showPage('rooms')" class="block w-full text-left text-lg font-bold">Kamar</button>
+            <button onclick="showPage('gallery')" class="block w-full text-left text-lg font-bold">Galeri</button>
+            <button onclick="showPage('contact')" class="block w-full text-left text-lg font-bold">Kontak</button>
+            <button onclick="showPage('rooms')"
+                class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold">Reservasi Sekarang</button>
+        </div>
+    </nav>
+
+    <main class="pt-20">
+
+        <!-- PAGE: HOME -->
+        <section id="home" class="tab-content active page-enter">
+            <!-- Hero with Ken Burns Effect -->
+            <div class="relative h-[90vh] flex items-center overflow-hidden">
+                <div class="absolute inset-0 scale-110 animate-[kenburns_20s_infinite_alternate]">
+                    <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=2070"
+                        class="w-full h-full object-cover" alt="Luxury Hotel">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                <div class="relative max-w-7xl mx-auto px-6 text-white">
+                    <h1
+                        class="text-6xl md:text-8xl font-black mb-8 leading-tight animate__animated animate__fadeInLeft">
+                        Elegansi<br><span class="text-blue-500">Tanpa Batas.</span></h1>
+                    <p
+                        class="text-xl md:text-2xl mb-12 max-w-xl text-slate-200 leading-relaxed animate__animated animate__fadeInLeft animate__delay-1s">
+                        Definisi baru kemewahan dan kenyamanan di jantung destinasi impian Anda.</p>
+                    <div class="flex flex-wrap gap-5 animate__animated animate__fadeInUp animate__delay-1s">
+                        <button onclick="showPage('rooms')"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-5 rounded-2xl font-bold text-lg transition-all shadow-xl shadow-blue-900/20 transform hover:-translate-y-1">Lihat
+                            Kamar</button>
+                        <button onclick="document.getElementById('about-section').scrollIntoView()"
+                            class="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white px-10 py-5 rounded-2xl font-bold text-lg transition-all border border-white/30">Pelajari
+                            Lebih</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Reveal Content -->
+            <div id="about-section" class="py-32 bg-white reveal">
+                <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
+                    <div class="relative">
+                        <div
+                            class="absolute -top-10 -left-10 w-40 h-40 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse">
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=2070"
+                            class="rounded-[2rem] shadow-2xl relative z-10 hover-lift" alt="Interior">
+                    </div>
+                    <div>
+                        <span
+                            class="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-full font-bold text-sm tracking-widest uppercase mb-6">Warisan
+                            Kami</span>
+                        <h2 class="text-5xl font-extrabold mb-8 leading-tight">Kenyamanan yang<br>Dibuat Khusus.</h2>
+                        <p class="text-slate-500 text-lg leading-relaxed mb-10">Kami tidak hanya menyewakan kamar; kami
+                            memberikan ruang bagi cerita Anda. Dengan standar keramahan internasional yang dipadukan
+                            dengan kearifan lokal, StayEase adalah rumah kedua bagi para penjelajah dunia.</p>
+                        <div class="grid grid-cols-2 gap-10">
+                            <div class="group cursor-default">
+                                <h4
+                                    class="font-black text-4xl text-blue-600 group-hover:scale-110 transition-transform inline-block">
+                                    15+</h4>
+                                <p class="text-slate-400 font-medium uppercase text-xs tracking-widest mt-2">Penghargaan
+                                    Internasional</p>
+                            </div>
+                            <div class="group cursor-default">
+                                <h4
+                                    class="font-black text-4xl text-blue-600 group-hover:scale-110 transition-transform inline-block">
+                                    100%</h4>
+                                <p class="text-slate-400 font-medium uppercase text-xs tracking-widest mt-2">Kepuasan
+                                    Pelanggan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="py-32 bg-slate-50 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-20 reveal">
+                        <h2 class="text-4xl font-black mb-6">Fasilitas Kelas Dunia</h2>
+                        <p class="text-slate-500 text-lg">Dirancang untuk memanjakan panca indera dan memastikan
+                            ketenangan pikiran Anda.</p>
+                    </div>
+                    <div class="grid md:grid-cols-4 gap-8">
+                        <!-- Card 1 -->
+                        <div class="bg-white p-10 rounded-[2.5rem] shadow-sm hover-lift border border-slate-100 reveal">
+                            <div
+                                class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m19 12-7-7-7 7" />
+                                    <path d="M12 19V5" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold mb-4">Pusat Spa</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed">Relaksasi total dengan terapis profesional
+                                dan aromaterapi pilihan.</p>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="bg-white p-10 rounded-[2.5rem] shadow-sm hover-lift border border-slate-100 reveal"
+                            style="transition-delay: 0.1s">
+                            <div
+                                class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 20v-6M6 20V10M18 20V4" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold mb-4">Smart Room</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed">Kendalikan pencahayaan dan suhu hanya
+                                dengan satu ketukan di tablet.</p>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="bg-white p-10 rounded-[2.5rem] shadow-sm hover-lift border border-slate-100 reveal"
+                            style="transition-delay: 0.2s">
+                            <div
+                                class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 8v4l3 3" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold mb-4">Fine Dining</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed">Hidangan gourmet dari chef berbintang
+                                Michelin setiap malam.</p>
+                        </div>
+                        <!-- Card 4 -->
+                        <div class="bg-white p-10 rounded-[2.5rem] shadow-sm hover-lift border border-slate-100 reveal"
+                            style="transition-delay: 0.3s">
+                            <div
+                                class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg shadow-blue-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 2v20M2 12h20" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold mb-4">Concierge 24/7</h3>
+                            <p class="text-slate-500 text-sm leading-relaxed">Tim ahli kami siap mengatur segala
+                                kebutuhan transportasi dan tiket Anda.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Rooms Highlight -->
+            <div class="py-32 bg-white">
+                <div class="max-w-7xl mx-auto px-6 reveal">
+                    <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                        <div>
+                            <h2 class="text-5xl font-black mb-4">Pilihan Eksklusif</h2>
+                            <p class="text-slate-500 text-lg">Kamar dengan rating tertinggi dari tamu kami bulan ini.
+                            </p>
+                        </div>
+                        <button onclick="showPage('rooms')"
+                            class="group flex items-center gap-3 font-bold text-blue-600">
+                            Lihat Semua
+                            <span
+                                class="w-12 h-12 rounded-full border border-blue-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                    <polyline points="12 5 19 12 12 19" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div id="featured-rooms-list" class="grid md:grid-cols-3 gap-10">
+                        <!-- JS Render -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: ROOM LIST -->
+        <section id="rooms" class="tab-content py-16 px-6 max-w-7xl mx-auto page-enter">
+            <div class="text-center mb-16">
+                <h1 class="text-5xl font-black mb-6">Koleksi Kamar</h1>
+                <p class="text-slate-500 max-w-2xl mx-auto">Dari kenyamanan modern hingga kemewahan klasik, temukan
+                    ruang yang tepat untuk gaya hidup Anda.</p>
+            </div>
+
+            <!-- Enhanced Filter Bar -->
+            <div
+                class="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 grid md:grid-cols-5 gap-6 mb-20 items-end">
+                <div class="space-y-2">
+                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400">Check-in</label>
+                    <input type="date" id="filter-checkin"
+                        class="w-full bg-slate-50 border-none rounded-xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400">Check-out</label>
+                    <input type="date" id="filter-checkout"
+                        class="w-full bg-slate-50 border-none rounded-xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400">Jumlah
+                        Kamar</label>
+                    <select id="filter-rooms"
+                        class="w-full bg-slate-50 border-none rounded-xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all appearance-none">
+                        <option value="1">1 Unit</option>
+                        <option value="2">2 Unit</option>
+                        <option value="3">3 Unit</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400">Tamu</label>
+                    <select id="filter-guests"
+                        class="w-full bg-slate-50 border-none rounded-xl p-4 font-bold text-slate-700 focus:ring-2 focus:ring-blue-600 focus:outline-none transition-all appearance-none">
+                        <option value="1">1 Tamu</option>
+                        <option value="2">2 Tamu</option>
+                        <option value="4">4 Tamu</option>
+                    </select>
+                </div>
+                <button onclick="applyFilters()"
+                    class="bg-slate-900 text-white h-14 rounded-xl font-black hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">Perbarui
+                    Hasil</button>
+            </div>
+
+            <div id="full-rooms-list" class="grid md:grid-cols-3 gap-10">
+                <!-- JS Render -->
+            </div>
+        </section>
+
+        <!-- PAGE: ROOM DETAIL -->
+        <section id="room-detail" class="tab-content py-16 px-6 max-w-7xl mx-auto page-enter">
+            <div id="room-detail-content">
+                <!-- JS Render -->
+            </div>
+        </section>
+
+        <!-- PAGE: BOOKING FORM -->
+        <section id="book" class="tab-content py-16 px-6 max-w-4xl mx-auto page-enter">
+            <div class="bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden">
+                <div class="bg-slate-900 p-12 text-white relative">
+                    <div class="absolute top-0 right-0 p-10 opacity-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-4xl font-black mb-4">Finalisasi Pemesanan</h2>
+                    <p class="text-slate-400 text-lg">Informasi ini akan langsung terhubung ke tim reservasi kami via
+                        WhatsApp.</p>
+                </div>
+
+                <div class="p-12">
+                    <div class="grid md:grid-cols-2 gap-10 mb-12">
+                        <div class="space-y-6">
+                            <label class="block text-sm font-black uppercase tracking-widest text-slate-400">Detail
+                                Anda</label>
+                            <input type="text" id="input-name" placeholder="Nama Lengkap Sesuai ID"
+                                class="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold focus:ring-2 focus:ring-blue-600 transition-all">
+                            <textarea id="input-notes" rows="4" placeholder="Permintaan khusus (opsional)"
+                                class="w-full bg-slate-50 border-none rounded-2xl p-5 font-bold focus:ring-2 focus:ring-blue-600 transition-all"></textarea>
+                        </div>
+                        <div class="bg-blue-50 p-8 rounded-3xl">
+                            <h3 class="font-black text-slate-800 mb-6 flex items-center gap-3">
+                                <span class="w-8 h-8 bg-blue-600 rounded-lg"></span>
+                                Ringkasan Kamar
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between border-b border-blue-100 pb-3">
+                                    <span class="text-slate-500 font-medium text-sm">Unit Kamar</span>
+                                    <span class="font-bold text-slate-800" id="summary-room-name">-</span>
+                                </div>
+                                <div class="flex justify-between border-b border-blue-100 pb-3">
+                                    <span class="text-slate-500 font-medium text-sm">Check-in</span>
+                                    <span class="font-bold text-slate-800" id="summary-dates">-</span>
+                                </div>
+                                <div class="flex justify-between text-lg pt-4">
+                                    <span class="font-black text-slate-800">Total</span>
+                                    <span class="font-black text-blue-600" id="summary-room-price">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="handleWhatsAppRedirect(event)"
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-6 rounded-2xl shadow-xl shadow-green-100 transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-4 text-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-11.7c.9 0 1.8.1 2.6.4l4.1-1.3-1.3 4.1c.3.8.4 1.7.4 2.6Z" />
+                            <path d="M8 11.5s1.5 2 3.5 2 3.5-2 3.5-2" />
+                            <line x1="12" x2="12" y1="8" y2="8.01" />
+                            <line x1="12" x2="12" y1="15" y2="15.01" />
+                        </svg>
+                        Selesaikan di WhatsApp
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE: GALLERY -->
+        <section id="gallery" class="tab-content py-16 px-6 max-w-7xl mx-auto page-enter text-center">
+            <h1 class="text-5xl font-black mb-12">Visual StayEase</h1>
+            <div class="columns-2 md:columns-4 gap-4 space-y-4" id="gallery-grid">
+                <!-- JS Render -->
+            </div>
+        </section>
+
+        <!-- PAGE: CONTACT -->
+        <section id="contact" class="tab-content py-16 px-6 max-w-7xl mx-auto page-enter">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h1 class="text-6xl font-black mb-8 leading-tight">Mari Bicara<br>Liburan.</h1>
+                    <p class="text-slate-500 text-xl mb-12">Tim spesialis kami siap mewujudkan rencana perjalanan Anda
+                        menjadi kenyataan yang indah.</p>
+                    <div class="space-y-10">
+                        <div class="flex gap-6 group">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-white shadow-xl flex items-center justify-center text-blue-600 transition-all group-hover:bg-blue-600 group-hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-400 uppercase tracking-widest mb-1">Pesan Instan
+                                </p>
+                                <p class="text-2xl font-bold text-slate-800">+62 812 3456 7890</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-6 group">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-white shadow-xl flex items-center justify-center text-blue-600 transition-all group-hover:bg-blue-600 group-hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-black text-slate-400 uppercase tracking-widest mb-1">Kantor Pusat
+                                </p>
+                                <p class="text-2xl font-bold text-slate-800">Uluwatu Luxury District, Bali</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal h-[500px] bg-slate-200 rounded-[3rem] overflow-hidden relative shadow-2xl"
+                    style="transition-delay: 0.2s">
+                    <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&q=80&w=2070"
+                        class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                        alt="Location Map">
+                    <div class="absolute inset-0 bg-blue-600/10 pointer-events-none"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 text-white py-24 mt-32">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-16">
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center gap-2 mb-8">
+                    <div class="bg-blue-600 p-2 rounded-xl text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                        </svg>
+                    </div>
+                    <span class="text-3xl font-black tracking-tighter italic">STAYEASE</span>
+                </div>
+                <p class="text-slate-500 text-lg max-w-sm">Memadukan kenyamanan modern dengan ketenangan alam. Kami
+                    adalah destinasi bagi mereka yang menghargai kualitas hidup.</p>
+            </div>
+            <div>
+                <h4 class="font-black text-xl mb-8">Navigasi</h4>
+                <ul class="space-y-5 text-slate-500 font-medium">
+                    <li><button onclick="showPage('home')"
+                            class="hover:text-blue-500 transition-colors">Beranda</button></li>
+                    <li><button onclick="showPage('rooms')" class="hover:text-blue-500 transition-colors">Koleksi
+                            Kamar</button></li>
+                    <li><button onclick="showPage('gallery')" class="hover:text-blue-500 transition-colors">Galeri
+                            Visual</button></li>
+                    <li><button onclick="showPage('contact')" class="hover:text-blue-500 transition-colors">Hubungi
+                            Kami</button></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-xl mb-8">Ikuti Kami</h4>
+                <div class="flex gap-4">
+                    <div
+                        class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                    </div>
+                    <div
+                        class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-blue-600 hover:scale-110 transition-all cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 border-t border-white/5 mt-20 pt-10 text-center text-slate-600">
+            <p>&copy; 2024 STAYEASE GROUP. Typeset in Plus Jakarta Sans.</p>
+        </div>
+    </footer>
+
+    <script>
+        // MOCK DATA
+        const ROOMS_DATA = [
+            { id: "standard", name: "Modern Studio", price: 550000, featured: false, capacity: "2 Tamu", amenities: ["WiFi", "AC", "Kitchen"], image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&q=80&w=2070" },
+            { id: "deluxe", name: "Royal King Suite", price: 1100000, featured: true, capacity: "2 Tamu", amenities: ["Kingsize Bed", "City View", "Bathtub"], image: "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=2070" },
+            { id: "family", name: "Ocean Family Loft", price: 2100000, featured: true, capacity: "4 Tamu", amenities: ["2 Levels", "Ocean View", "Lounge"], image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=2070" },
+            { id: "villa", name: "Sky Private Villa", price: 4800000, featured: true, capacity: "2-6 Tamu", amenities: ["Private Pool", "Butler", "Home Cinema"], image: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&q=80&w=2070" }
+        ];
+
+        const GALLERY_IMAGES = [
+            "https://images.unsplash.com/photo-1571896349842-33c89424de2d",
+            "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4",
+            "https://images.unsplash.com/photo-1584132967334-10e028bd69f7",
+            "https://images.unsplash.com/photo-1540518614846-7eded433c457",
+            "https://images.unsplash.com/photo-1445019980597-93fa8acb246c",
+            "https://images.unsplash.com/photo-1560662105-57f8ad6ae2d1",
+            "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9",
+            "https://images.unsplash.com/photo-1551882547-ff43c63efe81"
+        ];
+
+        let state = { activeRoom: null, filters: { in: '', out: '', r: '1', g: '2' } };
+
+        // INITIALIZATION
+        function init() {
+            renderFeatured();
+            renderAllRooms();
+            renderGallery();
+            setupScrollReveal();
+            setupStickyNav();
+            setDates();
+        }
+
+        // STICKY NAV ANIMATION
+        function setupStickyNav() {
+            window.addEventListener('scroll', () => {
+                const nav = document.getElementById('main-nav');
+                if (window.scrollY > 100) {
+                    nav.classList.add('h-16', 'bg-white/95', 'shadow-lg');
+                    nav.classList.remove('h-20', 'bg-white/80');
+                } else {
+                    nav.classList.add('h-20', 'bg-white/80');
+                    nav.classList.remove('h-16', 'bg-white/95', 'shadow-lg');
+                }
+            });
+        }
+
+        // SCROLL REVEAL ENGINE
+        function setupScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // NAVIGATION LOGIC
+        function showPage(id, roomId = null) {
+            const sections = document.querySelectorAll('.tab-content');
+            sections.forEach(s => {
+                s.classList.remove('active', 'page-enter');
+            });
+
+            const target = document.getElementById(id);
+            target.classList.add('active', 'page-enter');
+
+            if (roomId) {
+                if (id === 'room-detail') renderDetail(roomId);
+                if (id === 'book') renderSummary(roomId);
+            }
+
+            window.scrollTo(0, 0);
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // RENDERING
+        function renderCard(room, index) {
+            return `
+                <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-lg border border-slate-100 hover-lift group reveal" style="transition-delay: ${index * 0.1}s">
+                    <div class="relative overflow-hidden h-72">
+                        <div class="absolute inset-0 bg-slate-200 shimmer"></div>
+                        <img src="${room.image}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 relative z-10" alt="${room.name}" onload="this.previousElementSibling.remove()">
+                        <div class="absolute top-6 left-6 z-20">
+                            <span class="bg-blue-600 text-white px-4 py-2 rounded-xl font-black text-sm shadow-xl">Rp ${room.price.toLocaleString()}/malam</span>
+                        </div>
+                    </div>
+                    <div class="p-10">
+                        <div class="flex items-center gap-2 mb-3">
+                            <svg class="text-blue-600" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                            <span class="text-xs font-black uppercase tracking-widest text-slate-400">${room.capacity}</span>
+                        </div>
+                        <h3 class="text-2xl font-black mb-4 group-hover:text-blue-600 transition-colors">${room.name}</h3>
+                        <div class="flex gap-4 mt-8">
+                            <button onclick="showPage('room-detail', '${room.id}')" class="flex-1 border-2 border-slate-100 py-4 rounded-2xl font-black hover:bg-slate-50 transition-all text-slate-600">Detail</button>
+                            <button onclick="bookingInit('${room.id}')" class="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black hover:bg-blue-600 transition-all shadow-xl shadow-slate-100">Booking</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFeatured() {
+            const list = document.getElementById('featured-rooms-list');
+            list.innerHTML = ROOMS_DATA.filter(r => r.featured).slice(0, 3).map((r, i) => renderCard(r, i)).join('');
+            setupScrollReveal(); // Re-init reveal for new content
+        }
+
+        function renderAllRooms() {
+            const list = document.getElementById('full-rooms-list');
+            list.innerHTML = ROOMS_DATA.map((r, i) => renderCard(r, i)).join('');
+            setupScrollReveal();
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = GALLERY_IMAGES.map((img, i) => `
+                <div class="reveal group overflow-hidden rounded-[2rem] relative" style="transition-delay: ${i * 0.05}s">
+                    <img src="${img}?auto=format&fit=crop&q=80&w=800" class="w-full grayscale hover:grayscale-0 transition-all duration-700 cursor-zoom-in group-hover:scale-105" alt="Galeri">
+                    <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+            `).join('');
+            setupScrollReveal();
+        }
+
+        function renderDetail(roomId) {
+            const room = ROOMS_DATA.find(r => r.id === roomId);
+            const content = document.getElementById('room-detail-content');
+            content.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-16 items-start">
+                    <div class="sticky top-32">
+                        <img src="${room.image}" class="w-full h-[600px] object-cover rounded-[3rem] shadow-2xl" alt="${room.name}">
+                    </div>
+                    <div>
+                        <button onclick="showPage('rooms')" class="text-slate-400 font-bold mb-8 hover:text-blue-600 transition-colors flex items-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                             Kembali
+                        </button>
+                        <h1 class="text-6xl font-black mb-6">${room.name}</h1>
+                        <p class="text-3xl font-black text-blue-600 mb-10">Rp ${room.price.toLocaleString()} <span class="text-lg text-slate-400 font-medium italic">/ malam inkl. pajak</span></p>
+                        
+                        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-sm mb-10">
+                            <h3 class="font-black text-xl mb-6">Kelengkapan Eksklusif</h3>
+                            <div class="grid grid-cols-2 gap-6">
+                                ${room.amenities.map(a => `<div class="flex items-center gap-3 text-slate-600 font-semibold"><span class="w-2 h-2 bg-blue-600 rounded-full"></span> ${a}</div>`).join('')}
+                            </div>
+                        </div>
+
+                        <p class="text-slate-500 text-lg leading-relaxed mb-12">Setiap detail dalam ${room.name} telah dikurasi untuk memenuhi ekspektasi Anda akan kualitas. Mulai dari seprai katun Mesir 1000-thread-count hingga pemandangan yang tidak akan Anda temukan di tempat lain.</p>
+                        
+                        <button onclick="bookingInit('${room.id}')" class="w-full bg-blue-600 text-white py-6 rounded-2xl font-black text-xl shadow-2xl shadow-blue-100 transform hover:-translate-y-1 transition-all">Pesan Unit Sekarang</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // LOGIC
+        function setDates() {
+            const d = new Date();
+            const today = d.toISOString().split('T')[0];
+            d.setDate(d.getDate() + 1);
+            const tomorrow = d.toISOString().split('T')[0];
+            document.getElementById('filter-checkin').value = today;
+            document.getElementById('filter-checkout').value = tomorrow;
+        }
+
+        function applyFilters() {
+            state.filters = {
+                in: document.getElementById('filter-checkin').value,
+                out: document.getElementById('filter-checkout').value,
+                r: document.getElementById('filter-rooms').value,
+                g: document.getElementById('filter-guests').value
+            };
+            const btn = event.target;
+            btn.innerHTML = "<span class='flex items-center justify-center gap-2 animate-pulse'>Menyimpan...</span>";
+            setTimeout(() => { btn.innerText = "Perbarui Hasil"; }, 800);
+        }
+
+        function bookingInit(id) {
+            state.activeRoom = id;
+            applyFilters();
+            showPage('book', id);
+        }
+
+        function renderSummary(roomId) {
+            const room = ROOMS_DATA.find(r => r.id === roomId);
+            const f = state.filters;
+            document.getElementById('summary-room-name').innerText = room.name;
+            document.getElementById('summary-room-price').innerText = `Rp ${room.price.toLocaleString()}`;
+            document.getElementById('summary-dates').innerText = `${f.in} - ${f.out}`;
+        }
+
+        function handleWhatsAppRedirect(e) {
+            e.preventDefault();
+            const room = ROOMS_DATA.find(r => r.id === state.activeRoom);
+            const name = document.getElementById('input-name').value;
+            if (!name) return alert("Masukkan nama Anda");
+
+            const msg = `Halo StayEase!\nSaya ingin reservasi unit: *${room.name}*\n--------------------\nCheck-in: ${state.filters.in}\nCheck-out: ${state.filters.out}\nUnit: ${state.filters.r}\nTamu: ${state.filters.g}\n\nPemesan: *${name}*\nCatatan: ${document.getElementById('input-notes').value || '-'}\n--------------------\nMohon instruksi selanjutnya.`;
+            window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // START APP
+        window.onload = init;
+
+        // CUSTOM ANIMATION
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes kenburns {
+                from { transform: scale(1); }
+                to { transform: scale(1.15); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>
