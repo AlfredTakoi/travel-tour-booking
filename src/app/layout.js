@@ -11,7 +11,7 @@ const poppins = Poppins({
 
 export const metadata = {
   title: "StayEase | Luxury Travel Booking",
-  description: "Definisi baru kemewahan dan kenyamanan di jantung destinasi impian Anda.",
+  description: "A new definition of luxury and comfort in the heart of your dream destination.",
 };
 
 export default function RootLayout({ children }) {
